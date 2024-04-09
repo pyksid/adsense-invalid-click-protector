@@ -227,8 +227,6 @@ if( ! class_exists( 'AICP' ) ) {
 
 	    	//Let's grab the data from the AJAX POST request
 	    	$ip = sanitize_text_field( $_POST['ip'] );
-	    	$countryName = sanitize_text_field( $_POST['countryName'] );
-	    	$countryCode = sanitize_text_field( $_POST['countryCode'] );
 	    	$clickCount = sanitize_text_field( $_POST['aicp_click_count'] );
 
 	    	//Now it's time to insert the data into the database
