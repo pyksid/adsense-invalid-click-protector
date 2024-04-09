@@ -196,10 +196,7 @@ if( ! class_exists( 'AICP' ) ) {
 	    	$aicpAdminOBJ->fetch_data();
 
 	    	/* JS */
-	    	wp_register_script( 'js-cookie', 'https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js' );
-	    	wp_enqueue_script( 'js-cookie' );
-
-	    	wp_register_script( 'aicp', plugins_url( '/assets/js/aicp.min.js' , __FILE__ ) , array( 'js-cookie' ) );
+	    	wp_register_script( 'aicp', plugins_url( '/assets/js/aicp.min.js' , __FILE__ ) , [], null );
 	    	wp_enqueue_script( 'aicp' );
 	    	wp_localize_script(
 	    		'aicp', //id
