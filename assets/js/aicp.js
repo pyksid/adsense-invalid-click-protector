@@ -35,7 +35,9 @@ const AICPPlugin = (() => {
     return null;
   };
 
-  const run = () => {
+  const run = async () => {
+    await new Promise((resolve) => setTimeout(resolve, 2000));
+
     if (document.querySelectorAll('.aicp').length === 0) {
       return;
     }
