@@ -1,4 +1,4 @@
-(function () {
+const AICPPlugin = (() => {
   const setCookie = (
     name,
     value,
@@ -35,7 +35,7 @@
     return null;
   };
 
-  document.addEventListener('DOMContentLoaded', () => {
+  const run = () => {
     if (document.querySelectorAll('.aicp').length === 0) {
       return;
     }
@@ -85,5 +85,17 @@
         }
       });
     }
-  });
+  };
+
+  return {
+    run,
+  };
 })();
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', () => {
+    AICPPlugin.run();
+  });
+} else {
+  AICPPlugin.run();
+}
