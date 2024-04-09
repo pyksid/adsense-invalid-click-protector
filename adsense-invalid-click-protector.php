@@ -248,7 +248,7 @@ if( ! function_exists( 'aicp_can_see_ads' ) ) {
 	function aicp_can_see_ads() {
 		global $wpdb;
 		$flag = 0;
-		$aicpOBJ = new AICP();
+		$aicpOBJ = AICP::get_instance();
 		$visitorIP = $aicpOBJ->visitor_ip();
 
 		$match = $wpdb->get_var( "SELECT COUNT(id) FROM $aicpOBJ->table_name WHERE ip = '$visitorIP'" );
