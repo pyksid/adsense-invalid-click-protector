@@ -13,7 +13,7 @@ Domain Path: /languages
 */
 
 /*
-Copyright 2012-2022 by Saumya Majumder 
+Copyright 2012-2022 by Saumya Majumder
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -55,32 +55,32 @@ if( ! class_exists( 'AICP' ) ) {
 		/*--------------------------------------------*
 	     * Attributes
 	     *--------------------------------------------*/
-	  
+
 	    /** Refers to a single instance of this class. */
 	    private static $instance = null;
 	    private static $refresh_check = 0;
-	     
+
 	    /* Saved options */
 	    public $table_name;
-	  
+
 	    /*--------------------------------------------*
 	     * Constructor
 	     *--------------------------------------------*/
-	  
+
 	    /**
 	     * Creates or returns an instance of this class.
 	     *
 	     * @return  AICP A single instance of this class.
 	     */
 	    public static function get_instance() {
-	  
+
 	        if ( null == self::$instance ) {
 	            self::$instance = new self;
 	        }
-	  
+
 	        return self::$instance;
 	    } // end get_instance;
-	  
+
 	    /**
 	     * Initializes the plugin by setting localization, filters, and administration functions.
 	     */
@@ -115,17 +115,17 @@ if( ! class_exists( 'AICP' ) ) {
 	    	// Adding settings link to the installed plugin page
 	    	add_filter( "plugin_action_links_" . AICP_BASE, array( $aicpAdminOBJ, 'plugin_add_settings_link' ) );
 	    }
-	  
+
 	    /*--------------------------------------------*
 	     * Functions
 	     *--------------------------------------------*/
-	    
+
 	    /**
 	     * Function to load the text domain
 	     * @return Nothing
 	    **/
 	    public function load_textdomain() {
-	    	load_plugin_textdomain( 'aicp', false, basename( dirname( __FILE__ ) ) . '/languages/' ); 
+	    	load_plugin_textdomain( 'aicp', false, basename( dirname( __FILE__ ) ) . '/languages/' );
 	    }
 
 	    /**
@@ -156,7 +156,7 @@ if( ! class_exists( 'AICP' ) ) {
 					if($currentIP !== $ip) {
 						$currentIP = $ip;
 						$actualIP = $ip;
-					} 
+					}
 				}
 			}
 
@@ -196,17 +196,15 @@ if( ! class_exists( 'AICP' ) ) {
 	    	$aicpAdminOBJ->fetch_data();
 
 	    	/* JS */
-	    	wp_register_script( 'js-cookie', plugins_url( '/assets/js/js.cookie.min.js' , __FILE__ ), array(), '3.0.0', true );
+	    	wp_register_script( 'js-cookie', 'https://cdn.jsdelivr.net/npm/js-cookie@3.0.5/dist/js.cookie.min.js' );
 	    	wp_enqueue_script( 'js-cookie' );
-	    	wp_register_script( 'js-iframe-tracker', plugins_url( '/assets/js/jquery.iframetracker.min.js' , __FILE__ ), array( 'jquery' ), '2.1.0', true );
-	    	wp_enqueue_script( 'js-iframe-tracker' );
 
-	    	wp_register_script( 'aicp', plugins_url( '/assets/js/aicp.min.js' , __FILE__ ) , array( 'jquery', 'js-cookie', 'js-iframe-tracker' ), '1.0', true );
+	    	wp_register_script( 'aicp', plugins_url( '/assets/js/aicp.min.js' , __FILE__ ) , array( 'js-cookie' ) );
 	    	wp_enqueue_script( 'aicp' );
-	    	wp_localize_script( 
+	    	wp_localize_script(
 	    		'aicp', //id
 	    		'AICP', // The name using which data will be fetched at the JS side
-	    		array( 
+	    		array(
 		    		'ajaxurl' => admin_url( 'admin-ajax.php' ),
 		    		'nonce' => wp_create_nonce( "aicp_nonce" ),
 		    		'ip' => $this->visitor_ip(),
@@ -234,13 +232,13 @@ if( ! class_exists( 'AICP' ) ) {
 	    	$clickCount = sanitize_text_field( $_POST['aicp_click_count'] );
 
 	    	//Now it's time to insert the data into the database
-	    	$wpdb->insert( 
-				$this->table_name, 
-				array( 
+	    	$wpdb->insert(
+				$this->table_name,
+				array(
 					'ip' => $ip,
 					'click_count' => $clickCount,
 					'timestamp' => current_time( 'mysql' )
-				) 
+				)
 			);
 	    }
 	} // AICP Class Ends
