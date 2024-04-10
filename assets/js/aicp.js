@@ -35,58 +35,78 @@ const AICPPlugin = (() => {
     return null;
   };
 
-  const run = async () => {
-    await new Promise((resolve) => setTimeout(resolve, 2000));
+  const removeAds = () => {
+    document.querySelectorAll('.aicp').forEach((el) => {
+      el.remove();
+    });
+  };
 
+  const banUser = (clickCount) => {
+    fetch(AICP.ajaxurl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({
+        action: 'process_data',
+        nonce: AICP.nonce,
+        ip: AICP.ip,
+        aicp_click_count: clickCount,
+      }),
+    });
+  };
+
+  const run = () => {
     if (document.querySelectorAll('.aicp').length === 0) {
       return;
     }
 
-    let count = getCookie('aicp_click_count') || 0;
+    let clickCount = getCookie('aicp_click_count') || 0;
 
-    if (count > AICP.clickLimit) {
-      document
-        .querySelectorAll('.aicp')
-        .forEach((ad) => (ad.style.display = 'none'));
-    } else {
-      const iframes = document.querySelectorAll('.aicp iframe');
-
-      window.addEventListener('blur', () => {
-        if (
-          iframes &&
-          iframes.length > 0 &&
-          Array.from(iframes).includes(document.activeElement)
-        ) {
-          count++;
-
-          setCookie(
-            'aicp_click_count',
-            count,
-            AICP.clickCounterCookieExp,
-            'strict',
-          );
-
-          if (count >= AICP.clickLimit) {
-            document
-              .querySelectorAll('.aicp')
-              .forEach((ad) => (ad.style.display = 'none'));
-
-            fetch(AICP.ajaxurl, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-              },
-              body: new URLSearchParams({
-                action: 'process_data',
-                nonce: AICP.nonce,
-                ip: AICP.ip,
-                aicp_click_count: count,
-              }),
-            });
-          }
-        }
-      });
+    if (clickCount > AICP.clickLimit) {
+      removeAds();
+      return;
     }
+
+    let isOverAd = false;
+    let currentAd = null;
+
+    document.querySelectorAll('.aicp .adsbygoogle').forEach((ad) => {
+      ad.addEventListener('mouseover', (e) => {
+        isOverAd = true;
+        currentAd = e.target;
+      });
+      ad.addEventListener('mouseout', () => {
+        isOverAd = false;
+        currentAd = null;
+        window.focus();
+      });
+    });
+
+    const onAdClick = () => {
+      if (!isOverAd) {
+        return;
+      }
+
+      clickCount++;
+
+      currentAd.style.pointerEvents = 'none';
+
+      setCookie(
+        'aicp_click_count',
+        clickCount,
+        AICP.clickCounterCookieExp,
+        'strict',
+      );
+
+      if (clickCount > AICP.clickLimit) {
+        removeAds();
+        banUser(clickCount);
+        window.removeEventListener('blur', onAdClick);
+      }
+    };
+
+    window.addEventListener('blur', onAdClick);
   };
 
   return {
