@@ -22,7 +22,7 @@ if( ! class_exists( 'AICP_ADMIN' ) ) {
 	    **/
 	    public function admin_scripts() {
 	    	/* CSS Calls */
-			wp_enqueue_style('aicp-admin-interface', AICP_DIR_URL . 'assets/css/aicp-admin-interface.min.css', array(), '1.0.0');
+				wp_enqueue_style('aicp-admin-interface', AICP_DIR_URL . 'assets/css/aicp-admin-interface.min.css', array(), '1.0.0');
 	    }
 
 	    /**
@@ -111,7 +111,7 @@ if( ! class_exists( 'AICP_ADMIN' ) ) {
 		    		__('%1$sThank you%2$s for installing %1$sAdSense Invalid Click Protector%2$s. It took 300+ hours to code, design and test to make this plugin a reality. But as this is a <strong>free plugin</strong>, all of these time and effort does not generate any revenue. Also as I\'m not a very privileged person, so earning revenue matters to me for keeping my lights on and keep me motivated to do the work I love. %3$s So, if you enjoy this plugin and understand the huge effort I put into this, please consider %1$s%4$sdonating some amount%5$s (no matter how small)%2$s for keeping aliave the development of this plugin. Thank you again for using my plugin. Also if you love using this plugin, I would really appiciate if you take 2 minutes out of your busy schedule to %1$s%6$sshare your review%7$s%2$s about this plugin.', 'aicp'),
 		    		'<strong>', '</strong>',
 		    		'<br /> <br />',
-		    		'<a href="http://donate.isaumya.com" target="_blank" rel="external" title="AdSense Invalid Click Protector - Plugin Donation">', '</a>',
+		    		'<a href="https://rzp.io/l/m7EhiuU" target="_blank" rel="external nofollow noopener noreferrer" title="AdSense Invalid Click Protector - Plugin Donation">', '</a>',
 		    		'<a href="https://wordpress.org/support/plugin/ad-invalid-click-protector/reviews/" target="_blank" rel="external" title="AdSense Invalid Click Protector - Post your Plugin Review">', '</a>'
 		    	);
 		    	
@@ -180,9 +180,7 @@ if( ! class_exists( 'AICP_ADMIN' ) ) {
 	    			<hr />
 	    			<h2><?php _e('Support the plugin', 'aicp'); ?></h2>
 	    			<p><?php _e('Believe it or not, developing a WorPress plugin really takes quite a lot of time to develop, test and to do continuous bugfix. Moreover as I\'m sharing this plugin for free, so all those times I\'ve spent coding this plugin yeild no revenue. So, overtime it become really hard to keep spending time on this plugin. So, if you like this plugin, I will really appriciate if you consider donating some amount for this plugin. Which will help me keep spending time on this plugin and make it even better. Please donate, if you can.', 'aicp'); ?></p>
-	    			<a href="http://donate.isaumya.com/" class="content-center" target="_blank">
-						<img src ="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" />
-					</a>
+	    			<form class="content-center"><script src="https://cdn.razorpay.com/static/widget/payment-button.js" data-payment_button_id="pl_FXG3hGY91IY5Rk" async></script></form>
 	    		</div>
 	    	</div>
 	    	<?php
@@ -484,7 +482,10 @@ if( ! class_exists( 'AICP_ADMIN' ) ) {
 			global $wpdb;
 			$this->fetch_data();
 			$aicpOBJ = new AICP();
-			$query = "DELETE FROM " . $aicpOBJ->table_name . " WHERE UNIX_TIMESTAMP( " . $aicpOBJ->table_name . ".timestamp ) < UNIX_TIMESTAMP( DATE_SUB( NOW(), INTERVAL " . $this->ban_duration . " DAY ) )";
+			$query = $wpdb->prepare(
+				"DELETE FROM {$aicpOBJ->table_name}  WHERE UNIX_TIMESTAMP( {$aicpOBJ->table_name}.timestamp ) < UNIX_TIMESTAMP( DATE_SUB( NOW(), INTERVAL %d DAY ) )",
+				$this->ban_duration
+			);
 			$wpdb->query( $query );
 		}
 
@@ -521,24 +522,27 @@ if( ! class_exists( 'AICP_ADMIN' ) ) {
 			**/
 			$bannedUserTableOBJ = new AICP_BANNED_USER_TABLE();
 			$aicpOBJ = new AICP();
-			if( 'delete'=== $bannedUserTableOBJ->current_action() ) {
-	        	global $wpdb;
-	        	$fetchedID = $_REQUEST['id'];
-	        	if( is_array( $fetchedID ) ) { // for bulk operation arry will return
-	        		$selectedID = implode( ",", $fetchedID );
-	        	} else { //for singel delete just the id will return
-	        		$selectedID = $fetchedID;
-	        	}
-	        	if( empty( $selectedID ) ) {
-	        		$this->delete_notice( false );
-	        	} else {
-	        		$query = "DELETE FROM " . $aicpOBJ->table_name . " WHERE " . $aicpOBJ->table_name . ".id IN (" . $selectedID . ")";
-	        		$wpdb->query( $query );
-					$this->delete_notice( true );
-	        	}
-	        }
-	        /* End of handelling the deletion process */
-	        /* Now it's time to show our data */
+			if( ( 'delete'=== $bannedUserTableOBJ->current_action() ) && isset( $_REQUEST['nonce'] ) && wp_verify_nonce( $_REQUEST['nonce'], 'delete_banned_user' ) ) {
+				global $wpdb;
+				$fetchedID = $_REQUEST['id'];
+				if( is_array( $fetchedID ) ) { // for bulk operation arry will return
+					$selectedID = implode( ',', array_fill( 0, count( $fetchedID ), '%d' ) );
+				} else { //for singel delete just the id will return
+					$selectedID = '%d';
+				}
+				if( empty( $selectedID ) ) {
+					$this->delete_notice( false );
+				} else {
+					$query = $wpdb->prepare(
+						"DELETE FROM {$aicpOBJ->table_name} WHERE {$aicpOBJ->table_name}.id IN ($selectedID)",
+						$fetchedID
+					);
+					$wpdb->query( $query );
+			$this->delete_notice( true );
+				}
+			}
+			/* End of handelling the deletion process */
+			/* Now it's time to show our data */
 			?>
 			<div class="wrap">
 				<h1><?php _e( 'Banned User Details', 'aicp' ); ?></h1>

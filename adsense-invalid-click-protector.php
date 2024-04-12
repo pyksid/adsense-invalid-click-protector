@@ -1,11 +1,11 @@
 <?php
 /*
-Plugin Name: AdSense Invalid Click Protector
-Plugin URI: https://www.isaumya.com/portfolio-item/adsense-invalid-click-protector/
+Plugin Name: Ad Invalid Click Protector
+Plugin URI: https://wordpress.org/plugins/ad-invalid-click-protector/
 Description: A WordPress plugin to protect your AdSense ads from unusual click bombings and invalid clicks
-Author: Saumya Majumder
-Author URI: https://www.isaumya.com/
-Version: 1.2.4
+Author: Saumya Majumder, Acnam Infotech
+Author URI: https://acnam.com/
+Version: 1.2.8
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Text Domain: aicp
@@ -13,7 +13,7 @@ Domain Path: /languages
 */
 
 /*
-Copyright 2012-2020 by Saumya Majumder 
+Copyright 2012-2022 by Saumya Majumder 
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -49,7 +49,7 @@ register_activation_hook( __FILE__, array( 'AICP_SETUP', 'on_activation' ) );
 register_uninstall_hook( __FILE__, array( 'AICP_SETUP', 'on_uninstall' ) );
 
 add_action( 'plugins_loaded', array( 'AICP', 'get_instance' ) );
-/* Main Class for AICP aka AdSense Invalic Click Protector */
+/* Main Class for AICP aka Ad Invalid Click Protector */
 if( ! class_exists( 'AICP' ) ) {
 	class AICP {
 		/*--------------------------------------------*

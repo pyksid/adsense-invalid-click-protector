@@ -33,7 +33,7 @@ if( ! class_exists( 'AICP_BANNED_USER_TABLE' ) ) {
 
 		public function column_ip( $item ) {
 			$actions = array(
-				'delete'    => sprintf( '<a class="aicp_delete" href="?page=%s&action=%s&id=%s">Delete</a>', $_REQUEST['page'], 'delete', $item->id ),
+				'delete'    => sprintf( '<a class="aicp_delete" href="?page=%s&action=%s&id=%s&nonce=%s">Delete</a>', esc_attr( $_REQUEST['page'] ), 'delete', $item->id, wp_create_nonce( 'delete_banned_user' ) ),
 			);
 
 			return sprintf( '%1$s %2$s', $item->ip, $this->row_actions( $actions ) );
